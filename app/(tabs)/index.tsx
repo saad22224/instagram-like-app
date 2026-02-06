@@ -1,98 +1,91 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { InstagramHeader } from '@/components/instagram/InstagramHeader';
+import { PostCard } from '@/components/instagram/PostCard';
+import { StoryItem } from '@/components/instagram/StoryItem';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import React from 'react';
+import { FlatList, SafeAreaView, ScrollView, StatusBar, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const MOCK_STORIES = [
+  { id: '1', username: 'Your Story', image: 'https://i.pravatar.cc/150?u=me', isSeen: true },
+  { id: '2', username: 'john_doe', image: 'https://i.pravatar.cc/150?u=2' },
+  { id: '3', username: 'sarah_smith', image: 'https://i.pravatar.cc/150?u=3' },
+  { id: '4', username: 'travel_lover', image: 'https://i.pravatar.cc/150?u=4' },
+  { id: '5', username: 'foodie_gram', image: 'https://i.pravatar.cc/150?u=5' },
+  { id: '6', username: 'nature_pics', image: 'https://i.pravatar.cc/150?u=6' },
+];
+
+const MOCK_POSTS = [
+  {
+    id: '1',
+    username: 'travel_lover',
+    userAvatar: 'https://i.pravatar.cc/150?u=4',
+    image: 'https://picsum.photos/id/10/800/800',
+    caption: 'Beautiful sunset in the mountains! #travel #nature',
+    likes: 1240,
+    timeAgo: '2 hours ago',
+  },
+  {
+    id: '2',
+    username: 'foodie_gram',
+    userAvatar: 'https://i.pravatar.cc/150?u=5',
+    image: 'https://picsum.photos/id/102/800/800',
+    caption: 'Best pizza in town 🍕 #foodie #pizza',
+    likes: 850,
+    timeAgo: '5 hours ago',
+  },
+  {
+    id: '3',
+    username: 'sarah_smith',
+    userAvatar: 'https://i.pravatar.cc/150?u=3',
+    image: 'https://picsum.photos/id/103/800/800',
+    caption: 'Morning vibes ✨',
+    likes: 2100,
+    timeAgo: '1 day ago',
+  },
+];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const colorScheme = useColorScheme() ?? 'light';
+  const theme = Colors[colorScheme];
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const renderStories = () => (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={[styles.storiesContainer, { borderBottomColor: theme.border }]}
+      contentContainerStyle={styles.storiesContent}
+    >
+      {MOCK_STORIES.map((story) => (
+        <StoryItem key={story.id} {...story} />
+      ))}
+    </ScrollView>
+  );
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
+      <InstagramHeader />
+      <FlatList
+        data={MOCK_POSTS}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <PostCard {...item} />}
+        ListHeaderComponent={renderStories}
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  storiesContainer: {
+    borderBottomWidth: 0.5,
+    paddingVertical: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  storiesContent: {
+    paddingHorizontal: 10,
   },
 });
