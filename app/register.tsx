@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { register } from '@/services/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -66,7 +67,7 @@ export default function RegisterScreen() {
                             value={fullName}
                             onChangeText={setFullName}
                         />
-                        <TextInput
+                        {/* <TextInput
                             placeholder="Username"
                             placeholderTextColor={theme.secondaryText}
                             style={[styles.input, {
@@ -76,7 +77,7 @@ export default function RegisterScreen() {
                             }]}
                             value={username}
                             onChangeText={setUsername}
-                        />
+                        /> */}
                         <TextInput
                             placeholder="Password"
                             placeholderTextColor={theme.secondaryText}
@@ -92,7 +93,7 @@ export default function RegisterScreen() {
 
                         <TouchableOpacity
                             style={[styles.signUpButton, { backgroundColor: theme.buttonBlue }]}
-                            onPress={handleRegister}
+                            onPress={()=> register(fullName , email , password)}
                         >
                             <Text style={styles.signUpButtonText}>Sign Up</Text>
                         </TouchableOpacity>

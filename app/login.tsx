@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { login } from '@/services/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -11,9 +12,20 @@ export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        // Navigate to tabs on login
-        router.replace('/(tabs)');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleLogin = async () => {
+        if (!email || !password) return;
+        
+        setIsLoading(true);
+        const result = await login(email, password);
+        setIsLoading(false);
+
+        if (result) {
+            router.replace('/(tabs)');
+        } else {
+            alert('Login failed. Please check your credentials.');
+        }
     };
 
     return (
@@ -60,10 +72,13 @@ export default function LoginScreen() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.loginButton, { backgroundColor: theme.buttonBlue }]}
+                        style={[styles.loginButton, { backgroundColor: theme.buttonBlue, opacity: isLoading ? 0.7 : 1 }]}
                         onPress={handleLogin}
+                        disabled={isLoading}
                     >
-                        <Text style={styles.loginButtonText}>Log In</Text>
+                        <Text style={styles.loginButtonText}>
+                            {isLoading ? 'Logging In...' : 'Log In'}
+                        </Text>
                     </TouchableOpacity>
 
                     <View style={styles.orContainer}>
