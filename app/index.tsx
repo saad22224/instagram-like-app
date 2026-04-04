@@ -1,11 +1,9 @@
-import { getToken, logout } from '@/services/auth';
+import { getToken, logout, me } from '@/services/auth';
 import { Redirect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
 export default function EntryPoint() {
-
-    // logout()
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -13,6 +11,7 @@ export default function EntryPoint() {
         const checkToken = async () => {
             const token = await getToken();
             if (token) {
+                await me(token);
                 setIsAuthenticated(true);
             }
             setIsLoading(false);

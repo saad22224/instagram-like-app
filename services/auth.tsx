@@ -27,7 +27,7 @@ export async function login(email: string, password: string) {
             // Save Token and User info
             await SecureStore.setItemAsync('userToken', data.token);
             await SecureStore.setItemAsync('userData', JSON.stringify(data.user || {}));
-            console.log('Login successful! Saved token.');
+            console.log('Login successful! Saved token.' + data.token);
             return data;
         } else {
             console.error('Login failed:', data.message || 'Unknown error');
@@ -43,9 +43,33 @@ export async function getToken() {
     return await SecureStore.getItemAsync('userToken');
 }
 
-export async function logout() {
-    await SecureStore.deleteItemAsync('userToken');
-    await SecureStore.deleteItemAsync('userData');
+export async function logout(token: string) {
+
+    if (!url) {
+        console.error('API URL is not defined in your .env file!');
+        return;
+    }
+
+    const fullurl = `${url.replace(/\/$/, '')}/api/auth/logout`;
+
+    const response = await fetch(fullurl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+             'Authorization': `Bearer ${token}`,
+        },
+        // body: JSON.stringify({ token }),
+    })
+
+    const data = await response.json()
+    if (response.ok) {
+        console.log("Logout successful" + token)
+        console.log(data)
+        await SecureStore.deleteItemAsync('userToken');
+        await SecureStore.deleteItemAsync('userData');
+        router.replace('/login');
+    }
 }
 
 
@@ -81,3 +105,37 @@ export async function register(name: string, email: string, password: string) {
         return null;
     }
 }
+
+
+
+export async function me(token: string) {
+
+    if (!url) {
+        console.error('API URL is not defined in your .env file!');
+        return;
+    }
+
+    const fullurl = `${url.replace(/\/$/, '')}/api/auth/me`;
+
+    const response = await fetch(fullurl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    })
+
+    const data = await response.json()
+    if (response.ok) {
+        console.log(data)
+    } else {
+        // console.error('Login failed:', data.message);
+        await SecureStore.deleteItemAsync('userToken');
+        await SecureStore.deleteItemAsync('userData');
+        return router.replace('/login');
+    }
+
+}
+
+

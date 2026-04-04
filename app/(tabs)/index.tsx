@@ -4,7 +4,7 @@ import { StoryItem } from '@/components/instagram/StoryItem';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
-import { FlatList, SafeAreaView, ScrollView, StatusBar, StyleSheet } from 'react-native';
+import { FlatList, SafeAreaView, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 
 const MOCK_STORIES = [
   { id: '1', username: 'Your Story', image: 'https://i.pravatar.cc/150?u=me', isSeen: true },
@@ -76,6 +76,7 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

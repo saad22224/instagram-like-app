@@ -1,5 +1,6 @@
 import { Colors, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { getToken, logout } from '@/services/auth';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -44,10 +45,21 @@ export default function ProfileScreen() {
                 <Text style={[styles.link, { color: theme.buttonBlue }]}>github.com/mohamed</Text>
             </View>
 
-            {/* Edit Profile Button */}
-            <TouchableOpacity style={[styles.editButton, { backgroundColor: colorScheme === 'dark' ? '#262626' : '#EFEFEF' }]}>
-                <Text style={[styles.editButtonText, { color: theme.text }]}>Edit Profile</Text>
-            </TouchableOpacity>
+            {/* Action Buttons */}
+            <View style={styles.actionButtonsRow}>
+                <TouchableOpacity style={[styles.profileActionButton, { backgroundColor: colorScheme === 'dark' ? '#262626' : '#EFEFEF' }]}>
+                    <Text style={[styles.actionButtonText, { color: theme.text }]}>Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.profileActionButton, { backgroundColor: '#ff3b30' }]}
+                    onPress={async () => {
+                        const token = await getToken();
+                        await logout(token || '');
+                    }}
+                >
+                    <Text style={[styles.actionButtonText, { color: '#fff' }]}>Log Out</Text>
+                </TouchableOpacity>
+            </View>
 
             {/* Tab Switcher */}
             <View style={[styles.tabSwitcher, { borderBottomColor: theme.border }]}>
@@ -157,14 +169,19 @@ const styles = StyleSheet.create({
     link: {
         fontWeight: '600',
     },
-    editButton: {
+    actionButtonsRow: {
+        flexDirection: 'row',
+        gap: 10,
+        marginBottom: Spacing.xl,
+    },
+    profileActionButton: {
+        flex: 1,
         height: 32,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: Spacing.xl,
     },
-    editButtonText: {
+    actionButtonText: {
         fontWeight: '600',
         fontSize: 14,
     },
